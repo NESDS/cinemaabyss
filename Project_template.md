@@ -59,6 +59,10 @@
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
 
+**Скриншоты для задания 2:**
+- [Результаты postman тестов](screenshots/postman-tests-results.png)
+- [Состояние топиков Kafka UI](screenshots/kafka-topics.png) 
+
 # Задание 3
 
 Команда начала переезд в Kubernetes для лучшего масштабирования и повышения надежности. 
@@ -275,6 +279,10 @@ cat .docker/config.json | base64
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
 
+**Скриншоты для задания 3:**
+- [API Movies через proxy](screenshots/api-movies-response.png)
+- [Логи Events Service](screenshots/events-service-logs.png)
+
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
@@ -349,6 +357,10 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+**Скриншоты для задания 4:**
+- [Развертывание Helm](screenshots/helm-deployment.png)
+- [API Movies через Helm](screenshots/helm-api-movies.png)
 
 ## Удаляем все
 
