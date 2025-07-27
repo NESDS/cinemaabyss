@@ -1,0 +1,78 @@
+@startuml
+' C4 Container Diagram — Кинобездна (To‑Be, минимальная версия)
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_WITH_LEGEND()
+
+' --- Клиент ---
+Person(user, "Пользователь", "Смотрит контент, оформляет подписку, ставит оценки, ведёт избранное.")
+
+' --- Внешние системы (только требуемые интеграции) ---
+System_Ext(paygw, "Платёжный провайдер", "Эквайринг, webhooks")
+System_Ext(reco, "Рекомендательная система", "Подборки по предпочтениям")
+System_Ext(oauth, "OAuth‑провайдеры", "Google/Apple/соцсети")
+
+' --- Целевая система ---
+System_Boundary(sys, "Онлайн‑кинотеатр «Кинобездна» — To‑Be") {
+
+  ' Единая точка вызова
+  Container(proxy, "API Gateway / Proxy", "HTTP/REST", "Единая точка входа для клиентов. Маршрутизация по доменам.")
+
+  ' Доменные микросервисы (минимальный набор из задания)
+  Container(auth, "Auth Service", "Сервис аутентификации", "Регистрация/логин, JWT, OAuth-линки")
+  ContainerDb(authdb, "Auth DB", "PostgreSQL", "Учётные записи/токены")
+
+  Container(users, "Users Service", "Сервис профилей", "Профили и настройки пользователей")
+  ContainerDb(usersdb, "Users DB", "PostgreSQL", "Данные профилей")
+
+  Container(movies, "Movies (Metadata) Service", "Метаданные фильмов", "Жанры, актёры, карточки")
+  ContainerDb(moviesdb, "Movies DB", "PostgreSQL", "Метаданные/справочники")
+
+  Container(rating, "Ratings & Favorites Service", "Оценки/избранное", "Рейтинги, списки избранного")
+  ContainerDb(ratingdb, "Ratings DB", "PostgreSQL", "Оценки и списки")
+
+  Container(subs, "Subscriptions Service", "Подписки", "Планы, статусы, периоды")
+  ContainerDb(subsdb, "Subscriptions DB", "PostgreSQL", "Состояния подписок")
+
+  Container(pay, "Payments Service", "Платежи", "Инициирует платежи, обрабатывает webhooks")
+  ContainerDb(paydb, "Payments DB", "PostgreSQL", "Транзакции/ордера")
+
+  Container(discount, "Discounts Service", "Скидки/промокоды", "Купоны и правила скидок")
+  ContainerDb(discountdb, "Discounts DB", "PostgreSQL", "Правила/история применения")
+
+  ' Событийная шина (MVP под следующее задание)
+  Container(kafka, "Kafka", "Event Bus", "События User/Payment/Movie и др.")
+}
+
+' --- Связи (минимально необходимые) ---
+Rel(user, proxy, "Использует", "HTTPS/REST")
+
+' Proxy -> домены
+Rel(proxy, auth, "REST/JSON")
+Rel(proxy, users, "REST/JSON")
+Rel(proxy, movies, "REST/JSON")
+Rel(proxy, rating, "REST/JSON")
+Rel(proxy, subs, "REST/JSON")
+Rel(proxy, pay, "REST/JSON")
+Rel(proxy, discount, "REST/JSON")
+
+' Сервисы -> БД
+Rel(auth, authdb, "SQL")
+Rel(users, usersdb, "SQL")
+Rel(movies, moviesdb, "SQL")
+Rel(rating, ratingdb, "SQL")
+Rel(subs, subsdb, "SQL")
+Rel(pay, paydb, "SQL")
+Rel(discount, discountdb, "SQL")
+
+' События (только ключевые домены)
+Rel(users, kafka, "Публикует User.*", "producer")
+Rel(movies, kafka, "Публикует Movie.*", "producer")
+Rel(pay, kafka, "Публикует/слушает Payment.*", "producer/consumer")
+Rel(subs, kafka, "Слушает события оплат", "consumer")
+
+' Внешние интеграции (только по заданию)
+Rel(auth, oauth, "OAuth 2.0/OIDC", "HTTPS")
+Rel(movies, reco, "Запросы рекомендаций", "HTTPS/REST")
+Rel(pay, paygw, "Эквайринг и webhooks", "HTTPS/Webhooks")
+
+@enduml
