@@ -157,7 +157,7 @@ jobs:
       
       - name: Run API tests
         working-directory: tests/postman
-        run: npm run test:docker
+        run: npm run test:local
         
       - name: Stop services
         if: always()
