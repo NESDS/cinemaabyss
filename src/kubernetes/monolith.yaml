@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: monolith
-        image: ghcr.io/NESDS/cinemaabyss/monolith:latest
+        image: ghcr.io/nesds/cinemaabyss/monolith:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
